@@ -18,8 +18,11 @@ public class ApiGatewayServerApplication {
     @Bean
     public RouteLocator gatewayRoutes(RouteLocatorBuilder builder) {
         return builder.routes()
-                .route("candidat", r -> r.path("/candidats/**")
+                .route("patients", r -> r.path("/patients/**")
                         .uri("http://localhost:8081/"))
+
+                .route("rdv", r -> r.path("/rdv/**")
+                        .uri("http://localhost:8089/"))
                 .build();
     }
 }

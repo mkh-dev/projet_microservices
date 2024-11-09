@@ -1,0 +1,67 @@
+services:
+  # Service MySQL
+  docker-mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: patientdb
+    ports:
+      - "3306:3306"
+    volumes:
+      - db:/var/lib/mysql
+    networks:
+      - app-network
+
+  # Service Eureka (Discovery Service)
+  discovery-service:
+    container_name: discovery-service
+    image: springcloud/eureka  # Use the updated Eureka image if available
+    restart: on-failure
+    ports:
+      - "8761:8761"
+    hostname: eureka
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
+    networks:
+      - app-network
+    depends_on:
+      - docker-mysql
+
+  # API Gateway
+  api-gateway:
+    container_name: api-gateway
+    build: ./api-gateway
+    restart: on-failure
+    ports:
+      - "8083:8083"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
+    networks:
+      - app-network
+    depends_on:
+      - discovery-service
+
+  # Application Patient
+  patient:
+    container_name: patient-container
+    image: patient
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://docker-mysql:3306/patientdb?autoReconnect=true&useSSL=false
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
+    ports:
+      - "8081:8081"
+    networks:
+      - app-network
+    depends_on:
+      - discovery-service
+      - docker-mysql
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  db:
