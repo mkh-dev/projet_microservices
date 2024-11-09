@@ -20,8 +20,6 @@ public class ApiGatewayServerApplication {
         return builder.routes()
                 .route("candidat", r -> r.path("/candidats/**")
                         .uri("http://localhost:8081/"))
-                .route("job", r -> r.path("/job/**")
-                        .uri("http://localhost:8082/"))
                 .build();
     }
 }

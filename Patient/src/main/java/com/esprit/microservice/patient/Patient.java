@@ -2,17 +2,18 @@ package com.esprit.microservice.patient;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.io.Serializable;
 import java.util.Date;
 
 @Entity
 public class Patient implements Serializable {
-    private static final long serialVersionUID = 1;
+    private static final long serialVersionUID = 6;
 
     @Id
     @GeneratedValue
-    private String id;
+    private int id;
     private String firstName;
     private String lastName;
     private Date dateOfBirth;
@@ -20,11 +21,12 @@ public class Patient implements Serializable {
     private String phoneNumber;
     private String email;
 
-    public String getId() {
+
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -75,6 +77,7 @@ public class Patient implements Serializable {
     public void setEmail(String email) {
         this.email = email;
     }
+
 
     public Patient() {
     }
