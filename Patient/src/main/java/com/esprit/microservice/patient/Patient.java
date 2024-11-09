@@ -12,7 +12,7 @@ public class Patient implements Serializable {
     private static final long serialVersionUID = 6;
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String firstName;
     private String lastName;

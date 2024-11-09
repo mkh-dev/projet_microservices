@@ -2,38 +2,50 @@ package com.esprit.microservice.patient;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
+@RequestMapping("/patients")
 public class PatientRestAPI {
+
     @Autowired
     private PatientService patientService;
-    private String title = "Hello, I'm the patient Micro-Service";
 
-    @RequestMapping("/hello")
-    public String sayHello() {
-        System.out.println(title);
-        return title;
+    // Retrieve all patients
+    @GetMapping("/retrieve-all-patients")
+    public List<Patient> getAllPatients() {
+        return patientService.retrieveAllPatients();
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_XML_VALUE)
-    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Patient> createPatient(@RequestBody Patient patient) {
-        return new ResponseEntity<>(patientService.addPatient(patient), HttpStatus.OK);
+    // Retrieve a specific patient by ID
+    @GetMapping("/retrieve-patient/{id}")
+    public Patient getPatientById(@PathVariable("id") Long patientId) {
+        return patientService.retrievePatient(patientId);
     }
 
-    @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Patient> updatePatient(@PathVariable(value = "id") String id,
+    // Add a new patient
+    @PostMapping("/add-patient")
+    public ResponseEntity<Patient> addPatient(@RequestBody Patient patient) {
+        Patient createdPatient = patientService.addPatient(patient);
+        return new ResponseEntity<>(createdPatient, HttpStatus.CREATED);
+    }
+
+    // Update an existing patient
+    @PutMapping("/modify-patient/{id}")
+    public ResponseEntity<Patient> updatePatient(@PathVariable("id") Long patientId,
                                                  @RequestBody Patient patient) {
-        return new ResponseEntity<>(patientService.updatePatient(id, patient), HttpStatus.OK);
+        Patient updatedPatient = patientService.updatePatient(patientId, patient);
+        return new ResponseEntity<>(updatedPatient, HttpStatus.OK);
     }
 
-    @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<String> deletePatient(@PathVariable(value = "id") String id) {
-        return new ResponseEntity<>(patientService.deletePatient(id), HttpStatus.OK);
+    // Delete a patient by ID
+    @DeleteMapping("/remove-patient/{id}")
+    public ResponseEntity<String> deletePatient(@PathVariable("id") Long patientId) {
+        String result = patientService.deletePatient(patientId);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
+
 }
